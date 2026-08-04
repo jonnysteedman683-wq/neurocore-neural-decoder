@@ -8,7 +8,13 @@ export default function Page() {
   const decoderRef = useRef<NeuroIntentDecoder | null>(null);
   const [sec, setSec] = useState(0);
 
+  const [cpu, setCpu] = useState<string>('--');
+  const [latency, setLatency] = useState<string>('--');
+
   useEffect(() => {
+    setCpu(((Math.random() * 2) + 2).toFixed(1));
+    setLatency(Math.floor(Math.random() * 5 + 10).toString());
+    
     decoderRef.current = new NeuroIntentDecoder();
     
     let time = 0;
@@ -193,8 +199,8 @@ export default function Page() {
           <span className="text-emerald-500 hidden sm:inline">[PASS] fftRadix2Convergence</span>
         </div>
         <div className="flex space-x-4 text-slate-400">
-          <span>CPU: {((Math.random() * 2) + 2).toFixed(1)}%</span>
-          <span>LATENCY: {Math.floor(Math.random() * 5 + 10)}ms</span>
+          <span>CPU: {cpu}%</span>
+          <span>LATENCY: {latency}ms</span>
           <span className="text-cyan-500">NODE_DECODE_SUCCESS</span>
         </div>
       </footer>
