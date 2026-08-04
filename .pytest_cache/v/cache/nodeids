@@ -1,0 +1,6 @@
+[
+  "scaffold/tests/test_decode.py::test_empty_input",
+  "scaffold/tests/test_decode.py::test_noise_signal_unknown",
+  "scaffold/tests/test_decode.py::test_requires_confirmation_toggle",
+  "scaffold/tests/test_decode.py::test_synthetic_alpha_sine_visualize"
+]
