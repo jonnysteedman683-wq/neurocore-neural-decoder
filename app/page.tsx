@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NeuroIntentDecoder, NeuroIntent } from '@/lib/NeuroIntentDecoder';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -21,7 +21,13 @@ export default function Page() {
   
   const [theme, setTheme] = useState<'slate' | 'midnight'>('slate');
   
+  const noisePath = useMemo(() => {
+    const pts = Array.from({length: 12}).map((_, i) => `${(i / 11) * 100},${80 + Math.random() * 20}`);
+    return `M ${pts.join(' L ')}`;
+  }, [sec]);
+  
   const [sonification, setSonification] = useState(false);
+  const [isPayloadExpanded, setIsPayloadExpanded] = useState(true);
   const audioCtx = useRef<AudioContext | null>(null);
   const oscillator = useRef<OscillatorNode | null>(null);
   const gainNode = useRef<GainNode | null>(null);
@@ -187,7 +193,20 @@ export default function Page() {
           </section>
           <section className={`flex-1 p-4 rounded-lg flex flex-col min-h-[200px] border ${c.sectionBg}`}>
             <h3 className={`text-[11px] uppercase tracking-wider mb-4 ${c.sectionTitle}`}>FFT Spectral Density (Radix-2)</h3>
-            <div className="flex-1 flex items-end space-x-1">
+            <div className="flex-1 flex items-end space-x-1 relative">
+              <div className={`absolute bottom-0 left-0 w-full h-[30%] pointer-events-none opacity-40 mix-blend-screen`}>
+                <motion.svg 
+                  viewBox="0 0 100 100" 
+                  preserveAspectRatio="none" 
+                  className="w-full h-full stroke-rose-500/50 fill-rose-500/10 stroke-[2]"
+                >
+                  <motion.path 
+                    initial={false}
+                    animate={{ d: noisePath + ' L 100,100 L 0,100 Z' }}
+                    transition={{ duration: 0.5, ease: "linear" }}
+                  />
+                </motion.svg>
+              </div>
               <div className={`w-1/12 h-[20%] ${c.barOff}`}></div>
               <div className={`w-1/12 h-[15%] ${c.barOff}`}></div>
               <div className="w-1/12 bg-cyan-600 h-[85%] shadow-[0_0_10px_rgba(8,145,178,0.3)]"></div>
@@ -235,37 +254,65 @@ export default function Page() {
             )}
           </div>
           <div className={`flex-1 rounded-lg p-6 flex flex-col min-h-[200px] border ${c.payloadBg}`}>
-            <h3 className={`text-[11px] uppercase tracking-wider mb-6 ${c.sectionTitle}`}>Active NeuroIntent Payload</h3>
-            {intent ? (
-              <div className="space-y-4 font-mono text-[11px]">
-                <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
-                  <span className={`italic ${c.muted}`}>id:</span>
-                  <span className={c.payloadText}>{intent.id}</span>
-                </div>
-                <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
-                  <span className={`italic ${c.muted}`}>source:</span>
-                  <span className={`uppercase ${c.payloadText}`}>{intent.source}</span>
-                </div>
-                <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
-                  <span className={`italic ${c.muted}`}>requiresConfirmation:</span>
-                  <span className={intent.requiresConfirmation ? 'text-rose-400' : 'text-emerald-400'}>{intent.requiresConfirmation.toString()}</span>
-                </div>
-                <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
-                  <span className={`italic ${c.muted}`}>timestamp:</span>
-                  <span className={c.payloadText}>{intent.timestamp}</span>
-                </div>
-                <div className="pt-4">
-                  <span className={`italic ${c.muted}`}>features:</span>
-                  <div className={`mt-2 p-3 rounded leading-relaxed break-all border ${c.featureBox}`}>
-                    {`{ alphaPower: ${intent.features.alphaPower.toFixed(2)}, betaRatio: ${intent.features.betaAlphaRatio.toFixed(2)}, asymmetry: ${intent.features.channelAsymmetry.toFixed(2)}, quality: ${intent.features.signalQuality.toFixed(2)} }`}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className={`flex-1 flex items-center justify-center text-sm ${c.secText}`}>
-                Awaiting EEG Stream...
-              </div>
-            )}
+            <div className="flex items-center justify-between mb-6">
+              <h3 className={`text-[11px] uppercase tracking-wider ${c.sectionTitle}`}>Active NeuroIntent Payload</h3>
+              <button 
+                onClick={() => setIsPayloadExpanded(!isPayloadExpanded)}
+                className={`p-1 rounded hover:${c.btn} transition-colors ${c.muted}`}
+              >
+                <motion.svg 
+                  animate={{ rotate: isPayloadExpanded ? 180 : 0 }} 
+                  className="w-4 h-4" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </button>
+            </div>
+            <AnimatePresence initial={false}>
+              {isPayloadExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden flex-1 flex flex-col"
+                >
+                  {intent ? (
+                    <div className="space-y-4 font-mono text-[11px] flex-1">
+                      <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
+                        <span className={`italic ${c.muted}`}>id:</span>
+                        <span className={c.payloadText}>{intent.id}</span>
+                      </div>
+                      <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
+                        <span className={`italic ${c.muted}`}>source:</span>
+                        <span className={`uppercase ${c.payloadText}`}>{intent.source}</span>
+                      </div>
+                      <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
+                        <span className={`italic ${c.muted}`}>requiresConfirmation:</span>
+                        <span className={intent.requiresConfirmation ? 'text-rose-400' : 'text-emerald-400'}>{intent.requiresConfirmation.toString()}</span>
+                      </div>
+                      <div className={`flex justify-between pb-2 border-b ${c.payloadBorder}`}>
+                        <span className={`italic ${c.muted}`}>timestamp:</span>
+                        <span className={c.payloadText}>{intent.timestamp}</span>
+                      </div>
+                      <div className="pt-4">
+                        <span className={`italic ${c.muted}`}>features:</span>
+                        <div className={`mt-2 p-3 rounded leading-relaxed break-all border ${c.featureBox}`}>
+                          {`{ alphaPower: ${intent.features.alphaPower.toFixed(2)}, betaRatio: ${intent.features.betaAlphaRatio.toFixed(2)}, asymmetry: ${intent.features.channelAsymmetry.toFixed(2)}, quality: ${intent.features.signalQuality.toFixed(2)} }`}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`flex-1 flex items-center justify-center text-sm ${c.secText}`}>
+                      Awaiting EEG Stream...
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
