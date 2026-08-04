@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { NeuroIntentDecoder, NeuroIntent } from '@/lib/NeuroIntentDecoder';
 
 export default function Page() {
@@ -108,7 +109,18 @@ export default function Page() {
               <div className="h-full bg-cyan-500" style={{ width: intent ? `${intent.confidence * 100}%` : '0%' }}></div>
             </div>
             <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500 mb-2">Detected Intent</p>
-            <h2 className="text-5xl font-light tracking-tight text-white uppercase">{intent?.intent || 'WAITING'}</h2>
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={intent?.intent || 'WAITING'}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="text-5xl font-light tracking-tight text-white uppercase"
+              >
+                {intent?.intent || 'WAITING'}
+              </motion.h2>
+            </AnimatePresence>
             {intent && (
               <div className="mt-4 px-4 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] font-bold">
                 CONFIDENCE: {(intent.confidence * 100).toFixed(1)}%
