@@ -1,0 +1,9 @@
+[project]
+name = "neurocore-neural-decoder"
+version = "0.1.0"
+description = "Neurocore neural decoder"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+decode = "neurocore_decoder.decoder:main"

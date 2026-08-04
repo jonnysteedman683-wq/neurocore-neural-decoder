@@ -35,7 +35,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col font-sans overflow-hidden">
+    <div className="w-full h-full bg-slate-950 text-slate-200 flex flex-col font-sans overflow-hidden">
       <header className="h-16 border-b border-slate-800 px-6 flex items-center justify-between bg-slate-900/50">
         <div className="flex items-center space-x-4">
           <div className="w-8 h-8 bg-cyan-600 rounded flex items-center justify-center font-bold text-white">NI</div>
@@ -57,8 +57,8 @@ export default function Page() {
         </div>
       </header>
 
-      <main className="flex-1 p-6 grid grid-cols-1 md:grid-cols-12 gap-6 overflow-y-auto">
-        <div className="md:col-span-4 flex flex-col space-y-6">
+      <main className="flex-1 p-6 grid grid-cols-12 gap-6 overflow-hidden">
+        <div className="col-span-4 flex flex-col space-y-6">
           <section className="flex-1 bg-slate-900/40 border border-slate-800 p-4 rounded-lg flex flex-col min-h-[200px]">
             <h3 className="text-[11px] uppercase tracking-wider text-slate-400 mb-4 flex justify-between">
               <span>Raw EEG Stream (256Hz)</span>
@@ -96,7 +96,7 @@ export default function Page() {
           </section>
         </div>
 
-        <div className="md:col-span-4 flex flex-col space-y-6">
+        <div className="col-span-4 flex flex-col space-y-6">
           <div className="h-48 bg-slate-900 border border-slate-800 p-6 rounded-lg flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500/20">
               <div className="h-full bg-cyan-500" style={{ width: intent ? `${intent.confidence * 100}%` : '0%' }}></div>
@@ -144,7 +144,7 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="md:col-span-4 flex flex-col space-y-4">
+        <div className="col-span-4 flex flex-col space-y-4">
           <div className="bg-slate-900/60 border border-slate-800 p-5 rounded-lg">
             <h3 className="text-[11px] uppercase tracking-wider text-slate-400 mb-4">Key Metrics</h3>
             <div className="grid grid-cols-2 gap-4">
