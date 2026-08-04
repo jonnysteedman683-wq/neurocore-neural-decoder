@@ -2,7 +2,6 @@ import time
 import math
 import uuid
 from .fft import fft
-from .schemas import ALLOWED_FEATURES
 
 class NeurocoreDecoder:
     def __init__(self, sample_rate: int = 256):
@@ -38,27 +37,23 @@ class NeurocoreDecoder:
 
         alpha_power = self.get_band_power(magnitudes, 8, 12)
         beta_power = self.get_band_power(magnitudes, 13, 30)
+        noise_floor = self.get_band_power(magnitudes, 0, 4)
         
         beta_alpha_ratio = beta_power / alpha_power if alpha_power > 0 else 0.0
         asymmetry = 0.0
-        quality = 1.0
         
-        noise_power = self.get_band_power(magnitudes, 50, 60)
-        if noise_power > (alpha_power + beta_power):
-            quality = max(0.0, quality - 0.5)
+        quality = 1.0
+        if noise_floor > 5.0:
+            quality = 0.0
+            
+        confidence = float(quality)
 
-        alpha_density = alpha_power / 5.0  # 8 to 12 is 5 bins roughly
-        beta_density = beta_power / 18.0   # 13 to 30 is 18 bins roughly
-
-        intent = "unknown"
-        confidence = 0.0
-
-        if alpha_density > beta_density * 1.5 and alpha_power > 0.1:
-            intent = "visualize"
-            confidence = min(1.0, alpha_power / 10.0)
-        elif beta_density > alpha_density * 1.5 and beta_power > 0.1:
+        if alpha_power < 10.0:
+            intent = "rest"
+        elif alpha_power <= 30.0:
             intent = "focus"
-            confidence = min(1.0, beta_power / 10.0)
+        else:
+            intent = "deep_focus"
 
         requires_confirmation = confidence < 0.75
 
@@ -69,8 +64,6 @@ class NeurocoreDecoder:
             "quality": quality
         }
 
-        assert set(features.keys()) == ALLOWED_FEATURES, "Invalid features extracted"
-
         return {
             "id": str(uuid.uuid4()),
             "source": "eeg",
@@ -80,9 +73,3 @@ class NeurocoreDecoder:
             "timestamp": int(time.time() * 1000),
             "requiresConfirmation": requires_confirmation
         }
-
-def main():
-    print("NeurocoreDecoder module")
-
-if __name__ == "__main__":
-    main()

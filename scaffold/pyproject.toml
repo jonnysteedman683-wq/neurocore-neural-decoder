@@ -1,9 +1,12 @@
-[project]
+[tool.poetry]
 name = "neurocore-neural-decoder"
 version = "0.1.0"
 description = "Neurocore neural decoder"
-requires-python = ">=3.11"
-dependencies = []
+authors = ["AI Studio <jonnysteedman683@gmail.com>"]
 
-[project.scripts]
-decode = "neurocore_decoder.decoder:main"
+[tool.poetry.dependencies]
+python = ">=3.11"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

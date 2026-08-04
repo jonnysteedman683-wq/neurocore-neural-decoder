@@ -1,4 +1,9 @@
 [
+  "scaffold/neurocore_decoder/tests/test_decode.py::test_intent_deep_focus",
+  "scaffold/neurocore_decoder/tests/test_decode.py::test_intent_focus",
+  "scaffold/neurocore_decoder/tests/test_decode.py::test_intent_rest",
+  "scaffold/neurocore_decoder/tests/test_decode.py::test_invalid_input",
+  "scaffold/neurocore_decoder/tests/test_decode.py::test_noise_floor_zero_confidence",
   "scaffold/tests/test_decode.py::test_empty_input",
   "scaffold/tests/test_decode.py::test_noise_signal_unknown",
   "scaffold/tests/test_decode.py::test_requires_confirmation_toggle",
