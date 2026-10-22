@@ -24,3 +24,14 @@ print(intent_data)
 #   "requiresConfirmation": False
 # }
 ```
+
+## MCP tool
+
+The decoder is also available as an MCP tool, `decode_eeg_intent(samples, sample_rate=256)`, over stdio. Install the optional extra and register it with any MCP client:
+
+```bash
+pip install ".[mcp]"
+claude mcp add neurocore -- python -m neurocore_decoder.mcp_server
+```
+
+The tool validates input: `sample_rate` must be a power of two from 64 to 4096, there must be exactly `sample_rate` samples, and every sample must be a finite number. Results with `requiresConfirmation: true` are low confidence; treat them as proposals for a human to confirm, not commands.
